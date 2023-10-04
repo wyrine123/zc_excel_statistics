@@ -1,0 +1,16 @@
+---
+
+sign: # 签单
+  ignore_excel_last_row: true # 是否忽略excel的最后一行,如果最后一行是统计信息则设置为true,如果最后一行不是统计信息,则设置为false
+  contract_money_column_name: 合同金额 # 合同金额列名
+  designer_column_name_list: # 要统计的人所在列名
+    - 设计师
+    - 设计师2
+
+design: # 设计费
+  ignore_excel_last_row: true # 是否忽略excel的最后一行,如果最后一行是统计信息则设置为true,如果最后一行不是统计信息,则设置为false
+  contract_money_column_name: 实收金额 # 合同金额列名
+  designer_column_name_list: # 要统计的人所在列名
+    - 设计师
+    - 设计师2
+

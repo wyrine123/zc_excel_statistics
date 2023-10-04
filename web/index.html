@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传</title>
+    <style>
+        /* 样式用于选项卡切换 */
+        .tab {
+            display: none;
+        }
+
+        .active-tab {
+            display: block;
+        }
+
+        /* 样式用于错误消息 */
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>张楚工作Excel处理</h1>
+
+<!-- 选项卡切换按钮 -->
+<button onclick="showTab('tab1')">签单</button>
+<button onclick="showTab('tab2')">设计费</button>
+
+<!-- 选项卡1 -->
+<div id="tab1" class="tab">
+    <h2>签单</h2>
+    <input type="file" id="fileInput1">
+    <button id="uploadSignExcelButton">上传签单excel</button>
+</div>
+
+<!-- 选项卡2 -->
+<div id="tab2" class="tab">
+    <h2>设计费</h2>
+    <input type="file" id="fileInput2">
+    <button id="uploadDesignExcelButton">上传设计费excel</button>
+</div>
+
+<script>
+    function showTab(tabId) {
+        // 隐藏所有选项卡
+        var tabs = document.getElementsByClassName('tab');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';
+        }
+        // 显示指定选项卡
+        document.getElementById(tabId).style.display = 'block';
+    }
+
+    // 默认显示第一个选项卡
+    showTab('tab1');
+</script>
+
+<script>
+    document.getElementById('uploadSignExcelButton').addEventListener('click', function () {
+        var fileInput = document.getElementById('fileInput1');
+        var file = fileInput.files[0];
+
+        if (file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/sign/receipt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    var contentDisposition = decodeURIComponent(response.headers.get('Content-Disposition'));
+                    console.log("====" + contentDisposition)
+                    var filenameMatch = contentDisposition.match(/filename=([^&]+)/);
+                    console.log("====" + filenameMatch)
+                    var filename = filenameMatch ? filenameMatch[1] : 'downloaded_file';
+                    console.log("====" + filename)
+
+                    return response.blob().then(blob => ({ blob, filename }));
+                } else {
+                    throw new Error('上传失败');
+                }
+            })
+            .then(({ blob, filename }) => {
+                // 创建下载链接
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = filename; // 使用响应中的文件名
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('上传失败：', error);
+            });
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('uploadDesignExcelButton').addEventListener('click', function () {
+        var fileInput = document.getElementById('fileInput2');
+        var file = fileInput.files[0];
+
+        if (file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/design/receipt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    var contentDisposition = decodeURIComponent(response.headers.get('Content-Disposition'));
+                    console.log("====" + contentDisposition)
+                    var filenameMatch = contentDisposition.match(/filename=([^&]+)/);
+                    console.log("====" + filenameMatch)
+                    var filename = filenameMatch ? filenameMatch[1] : 'downloaded_file';
+                    console.log("====" + filename)
+
+                    return response.blob().then(blob => ({ blob, filename }));
+                } else {
+                    throw new Error('上传失败');
+                }
+            })
+            .then(({ blob, filename }) => {
+                // 创建下载链接
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = filename; // 使用响应中的文件名
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('上传失败：', error);
+            });
+        }
+    });
+</script>
+</body>
+</html>
